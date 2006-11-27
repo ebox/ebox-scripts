@@ -20,6 +20,12 @@ do
 	svnMessage="${svnMessage}[${rev}] "
 done
 # Completing commit message
-svnMessage=${svnMessage}" revisions into branches/0.8"
+svnMessage="${svnMessage} revisions into branches/0.8"
+
+FILENAME=/tmp/$$
+echo $svnMessage > $FILENAME
+
 echo "Committing ..."
-svn ci -m $svnMessage
+svn ci --file $FILENAME
+
+rm -f $FILENAME
