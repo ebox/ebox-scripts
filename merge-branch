@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Kopyleft (K) 2006 by Warp Networks
+# All rights reversed
+
+BRANCH=~/svn/ebox-platform/branches/0.8
+
+cd $BRANCH
+
+echo "Updating ..."
+svn up
+
+echo "Merging ..."
+for rev in $*
+do
+	prev_rev=$(($rev - 1))
+	svn merge -r$prev_rev:$rev https://svn.warp.es/ebox-platform/trunk/
+done
+echo "Committing ..."
+svn ci -m "Merged $* revisions into branches/0.8"
