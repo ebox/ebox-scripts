@@ -11,10 +11,15 @@ echo "Updating ..."
 svn up
 
 echo "Merging ..."
+# Starting commit message
+svnMessage="Merged "
 for rev in $*
 do
 	prev_rev=$(($rev - 1))
 	svn merge -r$prev_rev:$rev https://svn.warp.es/ebox-platform/trunk/
+	svnMessage="${svnMessage}[${rev}] "
 done
+# Completing commit message
+svnMessage=${svnMessage}" revisions into branches/0.8"
 echo "Committing ..."
-svn ci -m "Merged $* revisions into branches/0.8"
+svn ci -m $svnMessage
