@@ -1,7 +1,14 @@
 #!/bin/sh
 
+# Script to merge revisions from trunk to the desired branch
+# Usage: merge-branch [revisions]
 # Kopyleft (K) 2006 by Warp Networks
 # All rights reversed
+
+if [ $# -eq 0 ]; then 
+    echo "Usage: $0 [revisions]"
+    exit 1
+fi
 
 BRANCH=~/svn/ebox-platform/branches/0.8
 
@@ -19,10 +26,25 @@ do
 	svn merge -r$prev_rev:$rev https://svn.warp.es/ebox-platform/trunk/
 	svnMessage="${svnMessage}[${rev}] "
 done
-# Completing commit message
-svnMessage="${svnMessage} revisions into branches/0.8"
 
-FILENAME=/tmp/$$
+# Completing commit message
+if [ $# -gt 1 ]; then
+    svnMessage="${svnMessage} revisions"
+else
+    svnMessage="${svnMessage} revision"
+fi
+svnMessage="${svnMessage} into branches/0.8"
+
+# Choose a file which does not exist
+idProcess=$$
+FILENAME=/tmp/$idProcess
+while [ -e $FILENAME ]; do
+    FILENAME=/tmp/((idProcess++))
+done
+
+# Make the file have owner-only permissions (Security hack!)
+touch $FILENAME
+chmod 0600 $FILENAME
 echo $svnMessage > $FILENAME
 
 echo "Committing ..."
