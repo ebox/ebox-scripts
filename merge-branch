@@ -35,12 +35,8 @@ else
 fi
 svnMessage="${svnMessage} into branches/0.8"
 
-# Choose a file which does not exist
-idProcess=$$
-FILENAME=/tmp/$idProcess
-while [ -e $FILENAME ]; do
-    FILENAME=/tmp/((idProcess++))
-done
+# Choose a file which does not exist using mktemp 
+FILENAME=$(mktemp)
 
 # Make the file have owner-only permissions (Security hack!)
 touch $FILENAME
