@@ -5,12 +5,16 @@
 # Kopyleft (K) 2006 by Warp Networks
 # All rights reversed
 
+SVN_URL=https://svn.warp.es/ebox-platform/
+TRUNK_URL=${SVN_URL}trunk/
+BRANCH=~/svn/ebox-platform/branches/0.8
+
+readonly SVN_URL TRUNK_URL BRANCH
+
 if [ $# -eq 0 ]; then 
     echo "Usage: $0 [revisions]"
     exit 1
 fi
-
-BRANCH=~/svn/ebox-platform/branches/0.8
 
 cd $BRANCH
 
@@ -18,13 +22,26 @@ echo "Updating ..."
 svn up
 
 echo "Merging ..."
+
+# Choose a file which does not exist using mktemp 
+svnMessageFile=$(mktemp)
+svnLogFile=$(mktemp)
+# Make the file have owner-only permissions (Security hack!)
+touch $svnMessageFile $svnLogFile
+chmod 0600 $svnMessageFile $svnLogFile
+
 # Starting commit message
 svnMessage="Merged "
 for rev in $*
 do
 	prev_rev=$(($rev - 1))
-	svn merge -r$prev_rev:$rev https://svn.warp.es/ebox-platform/trunk/
+	# Merging revision $rev
+	svn merge -r$prev_rev:$rev $TRUNK_URL
+	# Composing the message
 	svnMessage="${svnMessage}[${rev}] "
+	# Getting useful information from log revision
+	msgRevision=$(svn log -r $rev $SVN_URL | sed '1,3d' | head -n -1 | sed '/^ *$/d')
+	echo " + [${rev}] -> ${msgRevision}" >> $svnLogFile
 done
 
 # Completing commit message
@@ -35,15 +52,10 @@ else
 fi
 svnMessage="${svnMessage} into branches/0.8"
 
-# Choose a file which does not exist using mktemp 
-FILENAME=$(mktemp)
-
-# Make the file have owner-only permissions (Security hack!)
-touch $FILENAME
-chmod 0600 $FILENAME
-echo $svnMessage > $FILENAME
+echo $svnMessage > $svnMessageFile
+cat $svnLogFile >> $svnMessageFile
 
 echo "Committing ..."
 svn ci --file $FILENAME
 
-rm -f $FILENAME
+rm -f $svnMessageFile $svnLogFile
