@@ -7,16 +7,52 @@
 
 SVN_URL=https://svn.warp.es/ebox-platform/
 TRUNK_URL=${SVN_URL}trunk/
-BRANCH=~/svn/ebox-platform/branches/0.8
 
-readonly SVN_URL TRUNK_URL BRANCH
+readonly SVN_URL TRUNK_URL
 
+usage() {
+
+    echo "Usage: $0 [-b branch] [-h] revision..."
+    echo "Where -b branch : branch number in ebox-platform subversion"
+    echo "      -h        : Show this message"
+    echo "      revision  : You can add as many revision as you like"
+    
+}
+
+branch_url=~/svn/ebox-platform/branches/
+branch=0.8
+# Getting optional options
+while getopts ":b:h" opt
+  do
+  case $opt in
+      b)
+	  branch=$OPTARG
+	  ;;
+      h) 
+	  usage
+	  exit 0
+	  ;;
+      *)
+	  echo "Unknown option, please read the instructions below..."
+	  usage
+	  exit 0
+	  ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+# Checking if some revisions are passed
 if [ $# -eq 0 ]; then 
-    echo "Usage: $0 [revisions]"
+    echo "At least, a revision number is needed"
+    # Print usage
+    usage
     exit 1
 fi
 
-cd $BRANCH
+
+branch_url=${branch_url}${branch}
+cd $branch_url || exit 2
 
 echo "Updating ..."
 svn up
@@ -56,6 +92,6 @@ echo $svnMessage > $svnMessageFile
 cat $svnLogFile >> $svnMessageFile
 
 echo "Committing ..."
-svn ci --file $FILENAME
+svn ci --file $svnMessageFile
 
 rm -f $svnMessageFile $svnLogFile
