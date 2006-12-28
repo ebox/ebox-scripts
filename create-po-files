@@ -1,0 +1,94 @@
+#!/bin/sh
+
+# Script to create po files for all ebox modules
+# It is needed a target-dir where client and common directories can be
+# found
+# Usage: create-po-files locale target-dir
+# Kopyleft (K) 2006 by Warp Networks
+# All rights reversed
+
+CLIENT_SUBDIR=client
+COMMON_SUBDIR=common
+
+readonly CLIENT_SUBDIR COMMON_SUBDIR
+
+usage() {
+
+    echo "Usage: $0 [-h] locale target-dir"
+    echo "Where locale     : LL_CC the target locale to create"
+    echo "      target-dir : directory which contains client and common subdirectories"
+    echo "      -h         : Show this message"
+
+}
+
+# Getting optional options
+while getopts "h" opt
+  do
+  case $opt in
+      h)
+	  usage
+	  exit 0
+	  ;;
+      *)
+	  usage
+	  exit 1
+	  ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+# Checking all have been passed
+if [ $# -ne 2 ]; then
+    echo "locale and target directory should be passed"
+    # Print usage
+    usage
+    exit 1
+fi
+
+targetDir=$2
+locale=$1
+
+# Check locale has the following format ll_CC or ll
+echo $locale | grep "^[a-z]\{2\}\(_[A-Z]\{2\}\)\?$" > /dev/null
+grepResult=$?
+# If not correct regular expression
+if [ $grepResult -eq 1 ]; then
+    echo "Locale should have the following format: ll_CC or ll"
+    # print usage
+    usage
+    exit 2
+elif [ ! -e $targetDir ]; then
+    echo "$targetDir no such directory"
+    exit 3
+elif [ ! -e ${targetDir}/$CLIENT_SUBDIR \
+	-o ! -e	${targetDir}/$COMMON_SUBDIR ]; then
+    echo "${targetDir}/$CLIENT_SUBDIR and ${targetDir}/$COMMON_SUBDIR should exist"
+    exit 4
+fi
+
+cd $targetDir
+
+# Set linguas first
+linguasFile=$(find $COMMON_SUBDIR -name "LINGUAS" | head -n 1)
+linguas=$(cat $linguasFile)
+linguas="$linguas $locale"
+# Sort linguas using perl
+linguas=$(perl -e "my @linguas = qw($linguas); my @sortLinguas = sort @linguas; print join ' ' , @sortLinguas;")
+
+for dir in $CLIENT_SUBDIR $COMMON_SUBDIR
+  do
+  # Now execute in every directory
+  for subDir in $(ls $dir)
+    do
+    echo "Creating $locale locale in $subDir eBox module"
+    msginit --input=$(ls ${dir}/${subDir}/po/*.pot) \
+	--locale=$locale --output=${dir}/${subDir}/po/${locale}.po \
+	--no-translator
+    echo "Updating LINGUAS file"
+    echo $linguas > ${dir}/${subDir}/po/LINGUAS
+  done
+done
+
+echo "Done."
+
