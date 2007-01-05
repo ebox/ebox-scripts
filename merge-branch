@@ -86,7 +86,7 @@ if [ $# -gt 1 ]; then
 else
     svnMessage="${svnMessage} revision"
 fi
-svnMessage="${svnMessage} into branches/0.8"
+svnMessage="${svnMessage} into branches/${branch}"
 
 echo $svnMessage > $svnMessageFile
 cat $svnLogFile >> $svnMessageFile
@@ -94,4 +94,5 @@ cat $svnLogFile >> $svnMessageFile
 echo "Committing ..."
 svn ci --file $svnMessageFile
 
+# Delete the temporary files
 rm -f $svnMessageFile $svnLogFile
