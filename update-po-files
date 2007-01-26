@@ -74,8 +74,11 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   # Get version from configure.ac
   version=$(perl -ne 'if (m/^AC_INIT.*, *\[(.*)\]\)/ ) { print $1; }' ${dir}/configure.ac)
   # Put version and package name in pot file
-  sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\"/" \
-         -e "s/PACKAGE/$packageName/" $(find ${dir}/po -regex ".*pot?")
+  for poFile in $(find ${dir}/po -regex ".*pot?")
+    do
+    sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\"/" \
+	-e "s/PACKAGE/$packageName/" $poFile
+  done
 
 done
 
