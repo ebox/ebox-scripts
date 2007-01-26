@@ -1,10 +1,10 @@
 #!/bin/sh
 
-# Script to update pot files for all ebox modules to have the same project version as
+# Script to update translation related files for all ebox modules to have the same project version as
 # the one that appears in configure.ac file
 # It is needed a target-dir where client and common directories can be
 # found
-# Usage: update-pot-files target-dir
+# Usage: update-po-version target-dir
 # Kopyleft (K) 2006 by Warp Networks
 # All rights reversed
 
@@ -65,17 +65,17 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   do
 
   if echo $dir | grep -q "common"; then
-      echo "Updating pot file from $(basename $dir)"
+      echo "Updating po(t) files from $(basename $dir)"
       packageName=$(basename $dir)
   else
-      echo "Updating pot file in $(basename $dir) eBox module"
+      echo "Updating po(t) files in $(basename $dir) eBox module"
       packageName=ebox-$(basename $dir)
   fi
   # Get version from configure.ac
   version=$(perl -ne 'if (m/^AC_INIT.*, *\[(.*)\]\)/ ) { print $1; }' ${dir}/configure.ac)
   # Put version and package name in pot file
   sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\"/" \
-         -e "s/PACKAGE/$packageName/" $(ls ${dir}/po/*.pot)
+         -e "s/PACKAGE/$packageName/" $(find ${dir}/po -regex ".*pot?")
 
 done
 
