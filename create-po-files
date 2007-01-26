@@ -78,18 +78,20 @@ linguas="$linguas $locale"
 # Sort linguas using perl
 linguas=$(perl -e "my @linguas = qw($linguas); my @sortLinguas = sort @linguas; print join ' ' , @sortLinguas;")
 
-for dir in $CLIENT_SUBDIR $COMMON_SUBDIR
+for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   do
-  # Now execute in every directory
-  for subDir in $(ls $dir)
-    do
-    echo "Creating $locale locale in $subDir eBox module"
-    msginit --input=$(ls ${dir}/${subDir}/po/*.pot) \
-	--locale=$locale --output=${dir}/${subDir}/po/${locale}.po \
-	--no-translator
-    echo "Updating LINGUAS file"
-    echo $linguas > ${dir}/${subDir}/po/LINGUAS
-  done
+
+  if echo $dir | grep -q "common"; then
+      echo "Creating $locale locale in $(basename $dir)"
+  else
+      echo "Creating $locale locale in $(basename $dir) eBox module"
+  fi
+  msginit --input=$(ls ${dir}/po/*.pot) \
+      --locale=$locale --output=${dir}/po/${locale}.po \
+      --no-translator
+  echo "Updating LINGUAS file"
+  echo $linguas > ${dir}/po/LINGUAS
+  
 done
 
 echo "Done."
