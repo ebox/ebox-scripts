@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# Script to update pot files for all ebox modules to have the same project version as configure.ac
+# Script to update pot files for all ebox modules to have the same project version as
+# the one that appears in configure.ac file
 # It is needed a target-dir where client and common directories can be
 # found
 # Usage: update-pot-files target-dir
