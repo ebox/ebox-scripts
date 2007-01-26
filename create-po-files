@@ -58,9 +58,11 @@ if [ $grepResult -eq 1 ]; then
     # print usage
     usage
     exit 2
+# Check the existence of target directory
 elif [ ! -e $targetDir ]; then
     echo "$targetDir no such directory"
     exit 3
+# Check client and common target directory
 elif [ ! -e ${targetDir}/$CLIENT_SUBDIR \
 	-o ! -e	${targetDir}/$COMMON_SUBDIR ]; then
     echo "${targetDir}/$CLIENT_SUBDIR and ${targetDir}/$COMMON_SUBDIR should exist"
