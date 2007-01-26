@@ -9,8 +9,9 @@
 
 CLIENT_SUBDIR=client
 COMMON_SUBDIR=common
+MODULE_TEMPLATE_DIR=${CLIENT_SUBDIR}/ebox/tools/module-template
 
-readonly CLIENT_SUBDIR COMMON_SUBDIR
+readonly CLIENT_SUBDIR COMMON_SUBDIR MODULE_TEMPLATE_DIR
 
 usage() {
 
@@ -81,6 +82,10 @@ linguas=$(cat $linguasFile)
 linguas="$linguas $locale"
 # Sort linguas using perl
 linguas=$(perl -e "my @linguas = qw($linguas); my @sortLinguas = sort @linguas; print join ' ' , @sortLinguas;")
+
+# Update module-template linguas file
+echo "Updating module template linguas file"
+echo $linguas ${MODULE_TEMPLATE_DIR}/po/LINGUAS
 
 for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   do
