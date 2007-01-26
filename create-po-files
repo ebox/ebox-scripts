@@ -67,6 +67,10 @@ elif [ ! -e ${targetDir}/$CLIENT_SUBDIR \
 	-o ! -e	${targetDir}/$COMMON_SUBDIR ]; then
     echo "${targetDir}/$CLIENT_SUBDIR and ${targetDir}/$COMMON_SUBDIR should exist"
     exit 4
+# Check if locale already exists
+elif [ $(find ${targetDir} -name ${locale}.po | wc -l) -ne 0 ]; then
+    echo "Locale $locale already exists in eBox"
+    exit 5
 fi
 
 cd $targetDir
@@ -83,16 +87,28 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
 
   if echo $dir | grep -q "common"; then
       echo "Creating $locale locale in $(basename $dir)"
+      packageName=$(basename $dir)
   else
       echo "Creating $locale locale in $(basename $dir) eBox module"
+      packageName=ebox-$(basename $dir)
   fi
   msginit --input=$(ls ${dir}/po/*.pot) \
       --locale=$locale --output=${dir}/po/${locale}.po \
       --no-translator
+
+  # Put correct version in the newly-created locale file
+
+  # Get version from configure.ac
+  version=$(perl -ne 'if (m/^AC_INIT.*, *\[(.*)\]\)/ ) { print $1; }' ${dir}/configure.ac)
+  # Put version and package name in pot file
+  sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\"/" \
+      ${dir}/po/${locale}.po
+
   echo "Updating LINGUAS file"
   echo $linguas > ${dir}/po/LINGUAS
   
 done
 
 echo "Done."
+
 
