@@ -78,4 +78,5 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
          -e "s/PACKAGE/$packageName/" $(ls ${dir}/po/*.pot)
 
 done
-      
+
+echo "Done."
