@@ -105,9 +105,10 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
 
   # Get version from configure.ac
   version=$(perl -ne 'if (m/^AC_INIT.*, *\[(.*)\]\)/ ) { print $1; }' ${dir}/configure.ac)
-  # Put version and package name in pot file
+  # Put version and package name in po file
+  # And charset to UTF-8
   sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\"/" \
-      ${dir}/po/${locale}.po
+      -e "s/charset=.*\\/charset=UTF-8\\/" ${dir}/po/${locale}.po
 
   echo "Updating LINGUAS file"
   echo $linguas > ${dir}/po/LINGUAS
