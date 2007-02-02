@@ -70,6 +70,9 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   else
       echo "Updating po(t) files in $(basename $dir) eBox module"
       packageName=ebox-$(basename $dir)
+      if [ $(basename $dir) = 'ebox' ]; then
+	  packageName=ebox
+      fi
   fi
   # Get version from configure.ac
   version=$(perl -ne 'if (m/^AC_INIT.*, *\[(.*)\]\)/ ) { print $1; }' ${dir}/configure.ac)
