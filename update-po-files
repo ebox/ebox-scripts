@@ -76,7 +76,7 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   # Put version and package name in po(t) file
   for poFile in $(find ${dir}/po/ -regex ".*pot?")
     do
-    sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\"/" \
+    sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\\\n\"/" \
 	-e "s/PACKAGE/$packageName/" $poFile
   done
 
