@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Script to create po files for all ebox modules
-# It is needed a target-dir where client and common directories can be
+# It is required a target-dir where client and common directories can be
 # found
 # Usage: create-po-files locale target-dir
 # Kopyleft (K) 2006 by Warp Networks
@@ -60,12 +60,12 @@ if [ $grepResult -eq 1 ]; then
     usage
     exit 2
 # Check the existence of target directory
-elif [ ! -e $targetDir ]; then
+elif [ ! -d $targetDir ]; then
     echo "$targetDir no such directory"
     exit 3
 # Check client and common target directory
-elif [ ! -e ${targetDir}/$CLIENT_SUBDIR \
-	-o ! -e	${targetDir}/$COMMON_SUBDIR ]; then
+elif [ ! -d ${targetDir}/$CLIENT_SUBDIR \
+	-o ! -d	${targetDir}/$COMMON_SUBDIR ]; then
     echo "${targetDir}/$CLIENT_SUBDIR and ${targetDir}/$COMMON_SUBDIR should exist"
     exit 4
 # Check if locale already exists
@@ -116,5 +116,3 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
 done
 
 echo "Done."
-
-
