@@ -108,7 +108,7 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   # Put version and package name in po file
   # And charset to UTF-8
   sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\"/" \
-      -e "s/charset=.*\\/charset=UTF-8\\/" ${dir}/po/${locale}.po
+      -e 's/charset=.*\\/charset=UTF-8\\/' -e "s/PACKAGE/$packageName/" ${dir}/po/${locale}.po
 
   echo "Updating LINGUAS file"
   echo $linguas > ${dir}/po/LINGUAS

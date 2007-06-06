@@ -80,7 +80,7 @@ for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
   for poFile in $(find ${dir}/po/ -regex ".*pot?")
     do
     sed -i -e "s/^\"Project-Id-Version:.*$/\"Project-Id-Version: $packageName $version\\\n\"/" \
-	-e "s/PACKAGE/$packageName/" $poFile
+	-e "s/PACKAGE/$packageName/" -e 's/charset=.*\\/charset=UTF-8\\/' $poFile
   done
 
 done
