@@ -41,7 +41,7 @@ shift $(($OPTIND - 1))
 
 # Checking all have been passed
 if [ $# -ne 2 ]; then
-    echo "locale and target directory should be passed"
+    echo "locale and target directory must be passed"
     # Print usage
     usage
     exit 1

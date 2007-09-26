@@ -1,0 +1,99 @@
+#!/bin/sh
+
+# Script to change from a release version to a dev version and vice
+# verse.
+#
+# Usage: release-control version target-dir
+# Kopylef (K) 2007 Warp Networks
+# All rights reversed
+
+CLIENT_SUBDIR=client
+COMMON_SUBDIR=common
+SERVER_SUBDIR=server
+
+readonly CLIENT_SUBDIR COMMON_SUBDIR
+
+usage() {
+
+    echo "Usage: $0 [-hr] version target-dir"
+    echo "Where version    : the next version number"
+    echo "      target-dir : directory which contains client and common subdirectories"
+    echo "      -h         : Show this message"
+    echo "      -r         : Change to release mode, if not present the dev mode is chosen"
+
+}
+
+releaseMode=0
+
+# Getting optional options
+while getopts "h" opt
+  do
+  case $opt in
+      r)
+          releaseMode=1
+          ;;
+      h)
+	  usage
+	  exit 0
+	  ;;
+      *)
+	  usage
+	  exit 1
+	  ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+# Checking all have been passed
+if [ $# -ne 2 ]; then
+    echo "version and target directory must be passed"
+    # Print usage
+    usage
+    exit 1
+fi
+
+targetDir=$2
+versionNum=$1
+
+# Check the existence of target directory
+if [ ! -d $targetDir ]; then
+    echo "$targetDir no such directory"
+    exit 2
+# Check client, server and common target directory
+elif [ ! -d ${targetDir}/$CLIENT_SUBDIR \
+	-o ! -d	${targetDir}/$COMMON_SUBDIR \ 
+        -o ! -d ${targetDir}/$SERVER_SUBDIR ]; then
+    echo "${targetDir}/$CLIENT_SUBDIR and ${targetDir}/$COMMON_SUBDIR should exist"
+    exit 3
+fi
+
+cd $targetDir
+
+if [ $releaseMode ]; then
+    for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/* ${SERVER_SUBDIR}/*
+      do
+    # Change the debian/control
+      awk '
+BEGIN {
+
+}
+
+Depends: {
+         str = $0
+         sub ( /\(.*\) (>= .*), \1 (<< .*)/ , /\1 (= $version)/ , str )
+         print
+}
+' ${dir}/debian/control
+
+}
+    # Change configure.ac
+      sed -i "s/^AC_INIT(\[\(.*\)\], \[\(.*\)\])/AC_INIT(\[\1\], \[$version\])" ${dir}/configure.ac
+    done
+
+else
+    # Change debian control
+
+
+fi
+

@@ -1,8 +1,46 @@
 #!/bin/bash
 
-packageName="ebox-services"
+# Script to add po files for a single ebox module
+# It is required a package name
+# Usage: add-po-files.sh packageName
+# Kopyleft (K) 2007 by Warp Networks
+# All rights reversed
 
-for locale in $(cat LINGUAS  | sed -s 's: :\n:g')
+usage() {
+
+    echo "Usage: $0 [-h] package-name"
+    echo "Where package-name : the package to add the po files, i.e. ebox-services"
+    echo "      -h           : Show this message"
+
+}
+
+# Getting optional options
+while getopts "h" opt
+  do
+  case $opt in
+      h)
+	  usage
+	  exit 0
+	  ;;
+      *)
+	  usage
+	  exit 1
+	  ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
+if [ $# -ne 1 ]; then
+    echo "package-name is required"
+    usage
+    exit 1
+fi
+
+packageName=$1
+
+IFS=" "
+for locale in $(cat LINGUAS) #  | sed -s 's: :\n:g')
   do
   echo $locale
   msginit --input=${packageName}.pot \
