@@ -9,6 +9,7 @@
 
 CLIENT_SUBDIR=client
 COMMON_SUBDIR=common
+SERVER_SUBDIR=server
 MODULE_TEMPLATE_DIR=${CLIENT_SUBDIR}/ebox/tools/module-template
 
 readonly CLIENT_SUBDIR COMMON_SUBDIR MODULE_TEMPLATE_DIR
@@ -65,8 +66,9 @@ elif [ ! -d $targetDir ]; then
     exit 3
 # Check client and common target directory
 elif [ ! -d ${targetDir}/$CLIENT_SUBDIR \
-	-o ! -d	${targetDir}/$COMMON_SUBDIR ]; then
-    echo "${targetDir}/$CLIENT_SUBDIR and ${targetDir}/$COMMON_SUBDIR should exist"
+	-o ! -d	${targetDir}/$COMMON_SUBDIR \
+        -o ! -d ${targetDir}/$SERVER_SUBDIR ]; then
+    echo "${targetDir}/$CLIENT_SUBDIR, ${targetDir}/$COMMON_SUBDIR and ${targetDir}/$SERVER_SUBDIR must exist"
     exit 4
 # Check if locale already exists
 elif [ $(find ${targetDir} -name ${locale}.po | wc -l) -ne 0 ]; then
@@ -87,7 +89,7 @@ linguas=$(perl -e "my @linguas = qw($linguas); my @sortLinguas = sort @linguas; 
 echo "Updating module template linguas file"
 echo $linguas ${MODULE_TEMPLATE_DIR}/po/LINGUAS
 
-for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/*
+for dir in ${CLIENT_SUBDIR}/* ${COMMON_SUBDIR}/* ${SERVER_SUBDIR}/*
   do
 
   if echo $dir | grep -q "common"; then
