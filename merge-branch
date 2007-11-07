@@ -5,7 +5,7 @@
 # Kopyleft (K) 2006 by Warp Networks
 # All rights reversed
 
-SVN_URL=https://svn.warp.es/ebox-platform/
+SVN_URL=https://svn.ebox-platform.com/ebox-platform/
 TRUNK_URL=${SVN_URL}trunk/
 
 readonly SVN_URL TRUNK_URL
