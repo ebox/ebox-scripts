@@ -19,7 +19,7 @@ usage() {
     
 }
 
-branch_url=~/svn/ebox-platform/branches/
+branch_url=~/dev/svn/ebox-platform/branches/
 branch=0.8
 # Getting optional options
 while getopts ":b:h" opt
