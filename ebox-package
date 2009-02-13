@@ -29,12 +29,36 @@ sub create_tmp
    }
 }
 
+sub scm_export
+{
+    my ($dir, $tmpdir) = @_;
+
+    if (-d ".svn") {
+        svn_export($dir, $tmpdir);
+    } elsif (-d ".git") {
+        git_export($dir, $tmpdir);
+    } else {
+        die "No known SCM is being used"
+    }
+}
+
 sub svn_export
 {
     my ($dir, $tmpdir) = @_;
 
     system("svn export $dir $tmpdir") and die "svn export failed";
 }  
+
+sub git_export
+{
+    my ($dir, $tmpdir) = @_;
+    my $branch = `git status | head -1 | cut -d' ' -f4`;
+    chomp($branch);
+    mkdir $tmpdir;
+    system("git archive --format=tar $branch $dir | tar x -C $tmpdir");
+    system("mv $tmpdir/$dir/* $tmpdir");
+    system("rm -rf $tmpdir/$dir");
+}
 
 sub get_pkg_and_version
 {
@@ -93,8 +117,14 @@ sub export_debian
 
     system("rm -rf $destdir/debian") if (-d "$destdir/debian");
 
-    system("svn export $svndir/debian $destdir/debian") 
+    if (-d ".svn") {
+	    system("svn export $svndir/debian $destdir/debian") 
                                         and die "couldn't export debian dir";
+    } else {
+        # FIXME: use git archive to avoid copying not checked in files
+	    system("cp -r $REPO/$svndir/debian $destdir/debian") 
+                                        and die "couldn't copy debian dir";
+    }
 }
 
 sub add_changelog_entry
@@ -166,12 +196,12 @@ sub packageIt
         $dir = "client/$package";
     }
 
-    $dir = "$REPO/$dir";
+    #$dir = "$REPO/$dir";
     $exportDir = "$TMPDIR/$package";
 
     die "package no exists" unless (-e $dir);
 
-    svn_export($dir, $exportDir);
+    scm_export($dir, $exportDir);
     my ($tarball, $untardir) = make_dist($exportDir);
     untar($tarball);
     $untardir = "$TMPDIR/$untardir";
