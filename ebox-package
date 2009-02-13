@@ -195,15 +195,15 @@ sub packageIt
     } elsif ($package eq 'all') {
         my @packages = ('libebox');
 
-        foreach (<client/*>) {
-            if (-d "$_") {
-                s#client/##;
-                push(@packages, $_);
+        foreach my $pkg (<client/*>) {
+            if (-d "$pkg") {
+                $pkg =~ s:client/::;
+                push(@packages, $pkg);
             }
         }
-        foreach (@packages) {
-            print "Packaging $_...\n";
-            system("$0 $_");
+        foreach my $pkg (@packages) {
+            print "Packaging $pkg...\n";
+            system("$0 $pkg");
         }
         exit;
     } else {
