@@ -192,6 +192,20 @@ sub packageIt
         
     } elsif ($package eq 'moddev') {
         $dir = "extra/moddev";
+    } elsif ($package eq 'all') {
+        my @packages = ('libebox');
+
+        foreach (<client/*>) {
+            if (-d "$_") {
+                s#client/##;
+                push(@packages, $_);
+            }
+        }
+        foreach (@packages) {
+            print "Packaging $_...\n";
+            system("$0 $_");
+        }
+        exit;
     } else {
         $dir = "client/$package";
     }
